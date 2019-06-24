@@ -1,1 +1,4 @@
 my_env
+settings.py
+storage/logs/*.log
+__pycache__
