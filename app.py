@@ -52,4 +52,3 @@ if __name__ == "__main__":
     RET = APP.get_message()
     LOGGER.info("Received message %s", MSG)
     print(RET)
-
