@@ -1,0 +1,40 @@
+name: lando-python
+recipe: lamp
+config:
+  webroot: .
+
+services:
+  cli:
+    type: python
+    build_as_root:
+      - "apt-get update -y"
+      - "apt-get -y upgrade"
+      - cd $LANDO_MOUNT && python -m venv my_env
+      - cd $LANDO_MOUNT && pip install -r requirements.txt
+    # run_as_root:
+    #   - cd $LANDO_MOUNT && source my_env/bin/activate
+
+tooling:
+  python3:
+    service: cli
+    description: "Run python3: lando python3"
+
+  python:
+    service: cli
+    description: "Run python3: lando python"
+
+  activate:
+    service: cli
+    level: app
+    user: root
+    cmd:
+      - cli: cd $LANDO_MOUNT && source /app/my_env/bin/activate
+    description: "starts a virtual env"
+
+  deactivate:
+    service: cli
+    user: root
+    cmd: "deactivate"
+    description: "stops a virtual env"
+
+# lando ssh -s cli --user=root
