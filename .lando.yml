@@ -2,23 +2,27 @@ name: lando-python
 recipe: lamp
 config:
   webroot: .
-
+  database: postgres
 services:
+  database:
+    type: postgres:custom
+    overrides:
+      image: bitnami/postgresql:10.7.0-r68
   cli:
     type: python
     build_as_root:
       - "apt-get update -y"
       - "apt-get -y upgrade"
       - cd $LANDO_MOUNT && python -m venv my_env
-      - cd $LANDO_MOUNT && pip install -r requirements.txt
 
 tooling:
   python3:
     service: cli
     description: "Run python3: lando python3"
-
   python:
     service: cli
     description: "Run python3: lando python"
 
+
 # lando ssh -s cli --user=root
+# pip install -r requirements.txt

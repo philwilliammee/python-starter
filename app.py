@@ -7,6 +7,7 @@ Created on June 11, 2019
 import argparse
 import example_settings as settings
 import example_resource
+import my_postgres as DB
 
 LOGGER = settings.LOGGER
 example_resource.example_resource(settings)
@@ -36,6 +37,11 @@ class App():
         """
         return self.message
 
+    def init_db(self, ):
+        """init the postgres db
+        """
+        DB.Postgress(**settings.DB_CONN)
+
 if __name__ == "__main__":
     # typical ussage
     PARSER = argparse.ArgumentParser(
@@ -51,4 +57,5 @@ if __name__ == "__main__":
     APP.set_message(MSG)
     RET = APP.get_message()
     LOGGER.info("Received message %s", MSG)
+    APP.init_db()
     print(RET)

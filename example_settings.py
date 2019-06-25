@@ -9,6 +9,9 @@ import logging
 DIRNAME = os.path.dirname(__file__)
 RESOURCEPATH = os.path.join(DIRNAME, 'resources/')
 sys.path.append(RESOURCEPATH)
+#set paths for DB
+DBPATH = os.path.join(DIRNAME, 'database/')
+sys.path.append(DBPATH)
 
 #configure logger
 LOG_PATH = "./storage/logs/"
@@ -21,3 +24,12 @@ logging.basicConfig(
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.DEBUG
 )
+
+#configure DB
+DB_CONN = {
+    "database": "lamp",
+    "user": "postgres",
+    "password": "",
+    "host": "127.0.0.1",
+    "port": "33158"
+}
