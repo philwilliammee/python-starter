@@ -13,49 +13,52 @@ LOGGER = settings.LOGGER
 example_resource.example_resource(settings)
 class App():
     """
-    example app
+    example app that connects to postgres db
     """
     def __init__(self):
         """
         initialize the app
         """
-        print(settings.DIRNAME)
-        self.message = "initialized"
+        self._db = DB.Postgress(**settings.DB_CONN)
 
-    def set_message(self, message):
+    def set_row(self, user, netid):
         """
-        set the messager value
+        set the user value in DB test table
         Arguments:
-            message {string} -- your message
+            user {string} -- name
+            netid {string} -- netid
         """
-        self.message = message
+        self._db.insert_db(user, netid)
 
-    def get_message(self):
+    def get_row(self):
         """ get the message
         Returns:
             string -- your message
         """
-        return self.message
+        rows = self._db.get_rows()
+        my_string = (("Name={}, Netid={}".format(row[1], row[2])) for row in rows)
+        return "".join(my_string)
 
-    def init_db(self, ):
-        """init the postgres db
+    def close(self):
+        """ roll everything back
         """
-        DB.Postgress(**settings.DB_CONN)
+        self._db.clean_up()
 
 if __name__ == "__main__":
     # typical ussage
     PARSER = argparse.ArgumentParser(
         description="Python test script. Save a message"
     )
-    PARSER.add_argument('-m', help="Give me a test string")
+    PARSER.add_argument('-u', help="Give me a username")
+    PARSER.add_argument('-n', help="Give me a netid")
     ARGS = PARSER.parse_args()
-    ARGS.verbose = False
-    LOGGER.info("Logger initialized")
-    MSG = ARGS.m if ARGS.m else "this is a test"
+    LOGGER.debug("starting App")
+    UNAME = ARGS.u if ARGS.u else "John Doe"
+    UNETID = ARGS.n if ARGS.n else "jd123"
     APP = App()
-    LOGGER.info("Setting message %s", MSG)
-    APP.set_message(MSG)
-    RET = APP.get_message()
-    LOGGER.info("Received message %s", MSG)
-    APP.init_db()
-    print(RET)
+    LOGGER.debug("Setting user %s with netid %s", UNAME, UNETID)
+    APP.set_row(UNAME, UNETID)
+    RET = APP.get_row()
+    LOGGER.info("Received message: %s", RET)
+    APP.close()
+    print("finished with success")

@@ -31,5 +31,6 @@ DB_CONN = {
     "user": "postgres",
     "password": "",
     "host": "127.0.0.1",
-    "port": "33158"
+    "port": "32815",
+    "LOGGER": LOGGER
 }

@@ -7,7 +7,7 @@ class Postgress():
     Returns:
         init -- interface for connection adapter
     """
-    def __init__(self, database, user, password, host, port):
+    def __init__(self, database, user, password, host, port, LOGGER):
         self.conn = psycopg2.connect(
             database=database,
             user=user,
@@ -15,38 +15,41 @@ class Postgress():
             host=host,
             port=port
         )
+        self.logger = LOGGER
         self.cur = self.conn.cursor()
+        self.logger.debug("conected to db: {}".format(database))
         self.up_db()
-        self.insert_db()
-        self.query_db()
+
+    def clean_up(self):
         self.down_db()
-        self.close_db()
+        self.logger.info("closing DB connection")
+        self.conn.close()
 
     def up_db(self):
-        self.cur.execute('''CREATE TABLE TEST
-      (ID INT PRIMARY KEY     NOT NULL,
-      NAME           TEXT    NOT NULL,
-      NETID            CHAR(10)     NOT NULL);''')
-
-        print("Table created successfully")
+        table_name = "TEST"
+        try:
+            self.cur.execute('''CREATE TABLE {}
+                (ID       SERIAL,
+                NAME      TEXT        NOT NULL,
+                NETID     CHAR(10)    NOT NULL);'''.format(table_name))
+            self.logger.warning("created {} table".format(table_name))
+        except psycopg2.errors.lookup("42P07"):
+            #42P07 = psycopg2.errors.DuplicateTable:
+            self.logger.critical("table already exists")
 
     def down_db(self):
         self.cur.execute('DROP TABLE "test";')
         self.conn.commit()
+        self.logger.warn("deleted test table")
 
-    def query_db(self):
-        self.cur.execute("SELECT id, name, netid from TEST")
-        rows = self.cur.fetchall()
-        for row in rows:
-            print("ID = ", row[0])
-            print("NAME = ", row[1])
-            print("NETID = ", row[2])
-
-    def insert_db(self):
-        self.cur.execute("INSERT INTO TEST (ID,NAME,NETID) \
-            VALUES (1, 'root', 'root1')")
+    def insert_db(self, user, netid):
+        self.cur.execute("INSERT INTO TEST (NAME,NETID) \
+            VALUES ('{}', '{}')".format(user, netid))
         self.conn.commit()
-        print("values inserted into user table")
+        self.logger.info("inserted {} {} into test table".format(user, netid))
 
-    def close_db(self):
-        self.conn.close()
+    def get_rows(self):
+        self.logger.debug("fetching all rows in test table")
+        self.cur.execute("SELECT id, name, netid from TEST")
+        return self.cur.fetchall()
+
