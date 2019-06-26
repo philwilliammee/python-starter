@@ -31,9 +31,9 @@ class App():
         self._db.insert_db(user, netid)
 
     def get_row(self):
-        """ get the message
+        """ fetch all rows from table
         Returns:
-            string -- your message
+            array -- rows in test table
         """
         rows = self._db.get_rows()
         my_string = (("Name={}, Netid={}".format(row[1], row[2])) for row in rows)
@@ -45,20 +45,24 @@ class App():
         self._db.clean_up()
 
 if __name__ == "__main__":
-    # typical ussage
+    # typical ussage: python app.py -u "my name" -n "mynetid"
     PARSER = argparse.ArgumentParser(
         description="Python test script. Save a message"
     )
     PARSER.add_argument('-u', help="Give me a username")
     PARSER.add_argument('-n', help="Give me a netid")
     ARGS = PARSER.parse_args()
-    LOGGER.debug("starting App")
     UNAME = ARGS.u if ARGS.u else "John Doe"
     UNETID = ARGS.n if ARGS.n else "jd123"
+
+    LOGGER.debug("starting App")
     APP = App()
-    LOGGER.debug("Setting user %s with netid %s", UNAME, UNETID)
+
+    LOGGER.debug("setting user %s with netid %s", UNAME, UNETID)
     APP.set_row(UNAME, UNETID)
+
     RET = APP.get_row()
-    LOGGER.info("Received message: %s", RET)
+    LOGGER.info("fetched message: %s", RET)
+
     APP.close()
     print("finished with success")
