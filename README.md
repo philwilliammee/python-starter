@@ -1,6 +1,6 @@
 # python-starter
 
-A module to connect to a postgress DB and send email
+A module to connect to a postgress DB
 
 ## Getting Started
 
