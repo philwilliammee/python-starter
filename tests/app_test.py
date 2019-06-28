@@ -12,24 +12,25 @@ class TestAppClass(unittest.TestCase):
     """
     def __init__(self, methodName):
         self.app = App()
-        self.msg = "unit testing"
         super().__init__(methodName)
 
-    def test_set_up(self):
-        """test app init
-        """
-        self.assertEqual(self.app.get_message(), "initialized")
+    # def test_db_conn(self):
+    #     """test db connection
+    #     """
+    #     self.assertIsNotNone(self.app._db.conn)
 
-    def test_set_message(self):
-        """testing set method
-        """
-        self.app.set_message(self.msg)
-        self.assertEqual(self.app.get_message(), self.msg)
+    # def test_update_db(self):
+    #     """testing set method
+    #     """
+    #     self.assertIsNone(self.app.set_row('test', 'testid'))
 
     def test_get_message(self):
         """test get method
         """
-        self.assertIsNotNone(self.app.get_message())
+        self.app.set_row('test', 'testid')
+        ret = self.app.get_row()
+        self.assertIn('test', ret)
+        self.app.close()
 
 if __name__ == '__main__':
     unittest.main()
